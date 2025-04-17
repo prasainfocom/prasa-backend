@@ -114,7 +114,7 @@ const sendPasswordResetEmail = async (email, token) => {
     });
     
     // Use the frontend URL, not backend
-    const resetUrl = `https://prasa-main.app/reset-password.html?token=${token}`;
+    const resetUrl = `https://prasa-main.app/api/reset-password.html?token=${token}`;
     
     // Email options
     const mailOptions = {
