@@ -440,7 +440,6 @@ const submitExperience = (req, res) => {
   });
 };
 
-// Submit Qualification and Skills
 const submitQualification = (req, res) => {
   console.log("Qualification form submission - Request body:", req.body);
   const email = req.user.email;

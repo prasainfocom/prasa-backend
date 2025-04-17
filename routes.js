@@ -624,7 +624,7 @@ router.post("/submit-qualification", authenticateToken, (req, res) => {
                     });
                 }
                 
-                res.json({ message: "All data saved successfully!" });
+                res.json({ message: "All data saved successfully! Your profile is complete." });
             });
             
         } catch (error) {
