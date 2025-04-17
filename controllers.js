@@ -113,7 +113,7 @@ const sendPasswordResetEmail = async (email, token) => {
       }
     });
     
-    const resetUrl = `https://prasa-backend.vercel.app/reset-password.html?token=${token}`;
+    const resetUrl = `https://prasa-backend.vercel.app/api/reset-password.html?token=${token}`;
     
     // Email options
     const mailOptions = {
