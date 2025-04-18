@@ -29,21 +29,6 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "Server is running" });
 });
 
-// Create a connection pool instead of a single connection
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  port: 25644,
-  ssl: {
-    rejectUnauthorized: flase,
-  },
-  connectTimeout: 30000, // 30 seconds timeout
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
 
 
 
