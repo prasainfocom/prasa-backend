@@ -49,7 +49,7 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
   if (err) {
-    console.error("Database connection failed: " + err.message);
+    console.error("Database connection failed: Hiii " + err.message);
   } else {
     console.log("Connected to MySQL Database ✅");
     db.query("SHOW TABLES", (err, tables) => {
