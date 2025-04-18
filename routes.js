@@ -537,113 +537,94 @@ router.post("/submit-experience", authenticateToken, (req, res) => {
     });
 });
 
-router.post("/submit-qualification", authenticateToken, (req, res) => {
-    console.log("Qualification form submission - Request body:", req.body);
-    const email = req.user.email;
-    
-    const { 
-        educationType, eduFromDate, eduToDate, instituteName, specialization, 
-        nacAccretion, boardUniversity, eduType, score, status, proofsSubmitted,
-        skills, certificationName, certFromDate, certToDate
-    } = req.body;
-    
-    // Start a transaction to ensure all data is saved or nothing is saved
-    db.beginTransaction(async err => {
-        if (err) {
-            console.error("Error starting transaction:", err);
-            return res.status(500).json({ message: "Database error" });
-        }
-        
-        try {
-            // 1. Delete existing qualifications, certifications, and skills
-            await queryPromise("DELETE FROM user_qualifications WHERE email = ?", [email]);
-            await queryPromise("DELETE FROM user_certifications WHERE email = ?", [email]);
-            await queryPromise("DELETE FROM user_skills WHERE email = ?", [email]);
-            
-            // 2. Insert qualifications
-            if (Array.isArray(educationType)) {
-                for (let i = 0; i < educationType.length; i++) {
-                    await queryPromise(
-                        `INSERT INTO user_qualifications 
-                        (email, education_type, from_date, to_date, institute_name, specialization, 
-                        nac_accretion, board_university, edu_type, score, status, proofs_submitted) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                        [
-                            email, educationType[i], eduFromDate[i], eduToDate[i], instituteName[i],
-                            specialization[i] || null, nacAccretion[i] || null, boardUniversity[i], 
-                            eduType[i], score[i], status[i], proofsSubmitted[i]
-                        ]
-                    );
-                }
-            } else if (educationType) {
-                await queryPromise(
-                    `INSERT INTO user_qualifications 
-                    (email, education_type, from_date, to_date, institute_name, specialization, 
-                    nac_accretion, board_university, edu_type, score, status, proofs_submitted) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                        email, educationType, eduFromDate, eduToDate, instituteName,
-                        specialization || null, nacAccretion || null, boardUniversity, 
-                        eduType, score, status, proofsSubmitted
-                    ]
-                );
-            }
-            
-            // 3. Insert skills if provided
-            if (skills) {
-                await queryPromise(
-                    "INSERT INTO user_skills (email, skills) VALUES (?, ?)",
-                    [email, skills]
-                );
-            }
-            
-            // 4. Insert certifications
-            if (Array.isArray(certificationName)) {
-                for (let i = 0; i < certificationName.length; i++) {
-                    if (certificationName[i]) {
-                        await queryPromise(
-                            "INSERT INTO user_certifications (email, certification_name, from_date, to_date) VALUES (?, ?, ?, ?)",
-                            [email, certificationName[i], certFromDate[i] || null, certToDate[i] || null]
-                        );
-                    }
-                }
-            } else if (certificationName) {
-                await queryPromise(
-                    "INSERT INTO user_certifications (email, certification_name, from_date, to_date) VALUES (?, ?, ?, ?)",
-                    [email, certificationName, certFromDate || null, certToDate || null]
-                );
-            }
-            
-            // Commit the transaction
-            db.commit(err => {
-                if (err) {
-                    console.error("Error committing transaction:", err);
-                    return db.rollback(() => {
-                        res.status(500).json({ message: "Error saving qualification data" });
-                    });
-                }
-                
-                res.json({ message: "All data saved successfully! Your profile is complete." });
-            });
-            
-        } catch (error) {
-            console.error("Error in qualification submission:", error);
-            db.rollback(() => {
-                res.status(500).json({ message: "Error saving qualification data" });
-            });
-        }
-    });
-    
-    // Helper function to promisify database queries
-    function queryPromise(sql, params) {
-        return new Promise((resolve, reject) => {
-            db.query(sql, params, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            });
-        });
+router.post("/submit-qualification", authenticateToken, async (req, res) => {
+  console.log("Qualification form submission - Request body:", req.body);
+  const email = req.user.email;
+
+  const {
+    educationType, eduFromDate, eduToDate, instituteName, specialization,
+    nacAccretion, boardUniversity, eduType, score, status, proofsSubmitted,
+    skills, certificationName, certFromDate, certToDate
+  } = req.body;
+
+  try {
+    // 1. Delete existing qualifications, certifications, and skills
+    await queryPromise("DELETE FROM user_qualifications WHERE email = ?", [email]);
+    await queryPromise("DELETE FROM user_certifications WHERE email = ?", [email]);
+    await queryPromise("DELETE FROM user_skills WHERE email = ?", [email]);
+
+    // 2. Insert qualifications
+    if (Array.isArray(educationType)) {
+      for (let i = 0; i < educationType.length; i++) {
+        await queryPromise(
+          `INSERT INTO user_qualifications
+          (email, education_type, from_date, to_date, institute_name, specialization,
+          nac_accretion, board_university, edu_type, score, status, proofs_submitted)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            email, educationType[i], eduFromDate[i], eduToDate[i], instituteName[i],
+            specialization[i] || null, nacAccretion[i] || null, boardUniversity[i],
+            eduType[i], score[i], status[i], proofsSubmitted[i]
+          ]
+        );
+      }
+    } else if (educationType) {
+      await queryPromise(
+        `INSERT INTO user_qualifications
+        (email, education_type, from_date, to_date, institute_name, specialization,
+        nac_accretion, board_university, edu_type, score, status, proofs_submitted)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          email, educationType, eduFromDate, eduToDate, instituteName,
+          specialization || null, nacAccretion || null, boardUniversity,
+          eduType, score, status, proofsSubmitted
+        ]
+      );
     }
+
+    // 3. Insert skills if provided
+    if (skills) {
+      await queryPromise(
+        "INSERT INTO user_skills (email, skills) VALUES (?, ?)",
+        [email, skills]
+      );
+    }
+
+    // 4. Insert certifications
+    if (Array.isArray(certificationName)) {
+      for (let i = 0; i < certificationName.length; i++) {
+        if (certificationName[i]) {
+          await queryPromise(
+            "INSERT INTO user_certifications (email, certification_name, from_date, to_date) VALUES (?, ?, ?, ?)",
+            [email, certificationName[i], certFromDate[i] || null, certToDate[i] || null]
+          );
+        }
+      }
+    } else if (certificationName) {
+      await queryPromise(
+        "INSERT INTO user_certifications (email, certification_name, from_date, to_date) VALUES (?, ?, ?, ?)",
+        [email, certificationName, certFromDate || null, certToDate || null]
+      );
+    }
+
+    res.json({ message: "✅ All data saved successfully!" });
+
+  } catch (error) {
+    console.error("❌ Error in qualification submission:", error);
+    res.status(500).json({ message: "Error saving qualification data" });
+  }
+
+  // ✅ Helper for promise-based DB calls
+  function queryPromise(sql, params) {
+    return new Promise((resolve, reject) => {
+      db.query(sql, params, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  }
 });
+
 router.post("/submit-medical-info", authenticateToken, (req, res) => {
     console.log("Medical info submission - Request body:", req.body);
     const userId = req.user.id;
