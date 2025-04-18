@@ -8,8 +8,7 @@ const mysql = require("mysql2");
 dotenv.config();
 const app = express();
 
-// Update CORS to allow your frontend domain
-// Update CORS to allow your specific frontend domain
+
 app.use(cors({
   origin: [
     'http://localhost:5500',
