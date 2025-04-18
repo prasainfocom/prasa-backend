@@ -440,6 +440,7 @@ const submitExperience = (req, res) => {
   });
 };
 
+// Submit Qualification and Skills
 const submitQualification = (req, res) => {
   console.log("Qualification form submission - Request body:", req.body);
   const email = req.user.email;
@@ -547,25 +548,6 @@ const submitQualification = (req, res) => {
     });
   }
 };
-
-// Get Family Details
-const getFamilyDetails = (req, res) => {
-  const userId = req.user.id;
-  
-  db.query("SELECT * FROM family_details WHERE user_id = ?", [userId], (err, results) => {
-    if (err) {
-      console.error("Error retrieving family details:", err);
-      return res.status(500).json({ error: err.message });
-    }
-    
-    if (results.length === 0) {
-      return res.json({ message: "No family details found", data: null });
-    }
-    
-    res.json({ message: "Family details retrieved successfully", data: results[0] });
-  });
-};
-
 const submitMedicalInfo = (req, res) => {
   const userId = req.user.id;
   const email = req.user.email; 
