@@ -537,7 +537,6 @@ router.post("/submit-experience", authenticateToken, (req, res) => {
     });
 });
 
-// 🔹 Submit Qualification and Skills Form
 router.post("/submit-qualification", authenticateToken, (req, res) => {
     console.log("Qualification form submission - Request body:", req.body);
     const email = req.user.email;
@@ -624,7 +623,7 @@ router.post("/submit-qualification", authenticateToken, (req, res) => {
                     });
                 }
                 
-                res.json({ message: "All data saved successfully!" });
+                res.json({ message: "All data saved successfully! Your profile is complete." });
             });
             
         } catch (error) {
@@ -645,7 +644,6 @@ router.post("/submit-qualification", authenticateToken, (req, res) => {
         });
     }
 });
-
 router.post("/submit-medical-info", authenticateToken, (req, res) => {
     console.log("Medical info submission - Request body:", req.body);
     const userId = req.user.id;
