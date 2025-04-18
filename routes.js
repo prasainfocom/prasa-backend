@@ -607,7 +607,7 @@ router.post("/submit-qualification", authenticateToken, async (req, res) => {
       );
     }
 
-    res.json({ message: "✅ All data saved successfully!" });
+    res.json({ message: "All Data Saved Successfully!" });
 
   } catch (error) {
     console.error("❌ Error in qualification submission:", error);
